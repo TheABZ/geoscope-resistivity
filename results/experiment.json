@@ -19,7 +19,7 @@
     "seed": 42
   },
   "versions": {
-    "geoscope-resistivity": "0.1.0",
+    "geoscope-resistivity": "0.2.0",
     "simpeg": "0.25.0",
     "numpy": "2.5.4",
     "matplotlib": "3.11.2"

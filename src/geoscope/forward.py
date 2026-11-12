@@ -7,6 +7,7 @@ infinite half-space. SimPEG supplies the layered-earth Hankel-transform solver.
 from dataclasses import dataclass
 
 import numpy as np
+from simpeg import maps
 from simpeg.electromagnetics.static import resistivity as dc
 
 
@@ -65,6 +66,46 @@ def simulate_wenner(earth: LayeredEarth, spacings) -> np.ndarray:
     if not np.all(np.isfinite(prediction)) or np.any(prediction <= 0):
         raise RuntimeError("Forward solver returned invalid apparent resistivities")
     return prediction
+
+
+class WennerOperator:
+    """Reuse survey geometry while changing log resistivities and thicknesses."""
+
+    def __init__(self, spacings, n_layers):
+        if isinstance(n_layers, bool) or not isinstance(n_layers, int) or n_layers < 1:
+            raise ValueError("n_layers must be a positive integer")
+        a = np.asarray(spacings, dtype=float)
+        if a.ndim != 1 or not a.size or not np.all(np.isfinite(a)) or np.any(a <= 0):
+            raise ValueError("spacings must be a nonempty positive finite 1D sequence")
+        sources = []
+        for spacing in a:
+            receiver = dc.receivers.Dipole(
+                np.array([[-0.5 * spacing, 0, 0]]),
+                np.array([[0.5 * spacing, 0, 0]]),
+                data_type="apparent_resistivity",
+            )
+            sources.append(dc.sources.Dipole(
+                [receiver], location_a=np.array([-1.5 * spacing, 0, 0]),
+                location_b=np.array([1.5 * spacing, 0, 0]), current=1,
+            ))
+        self.n_layers = n_layers
+        self.n_params = 2 * n_layers - 1
+        if n_layers > 1:
+            wires = maps.Wires(("rho", n_layers), ("h", n_layers - 1))
+            kwargs = {"rhoMap": maps.ExpMap(nP=n_layers) * wires.rho}
+            kwargs["thicknessesMap"] = maps.ExpMap(nP=n_layers - 1) * wires.h
+        else:
+            kwargs = {"rhoMap": maps.ExpMap(nP=1), "thicknesses": np.array([])}
+        self.simulation = dc.Simulation1DLayers(survey=dc.Survey(sources), **kwargs)
+
+    def __call__(self, log_parameters):
+        m = np.asarray(log_parameters, dtype=float)
+        if m.shape != (self.n_params,) or not np.all(np.isfinite(m)):
+            raise ValueError("Invalid log-parameter vector")
+        predicted = np.asarray(self.simulation.dpred(m)).reshape(-1)
+        if not np.all(np.isfinite(predicted)) or np.any(predicted <= 0):
+            raise ValueError("Invalid numerical forward response")
+        return predicted
 
 
 def synthetic_observations(clean, relative_noise=0.03, seed=42):

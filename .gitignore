@@ -218,3 +218,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Reproducible local posterior draws (regenerate with geoscope-analyze)
+results/**/posterior_samples.npz
+

@@ -1,0 +1,27 @@
+{
+  "data_origin": "synthetic; not Eruwa field measurements",
+  "array": "Wenner-alpha; A M N B; K=2*pi*a",
+  "noise_model": "log(observed/clean) ~ Normal(0, sigma_log**2)",
+  "config": {
+    "resistivities_ohm_m": [
+      100.0,
+      25.0,
+      800.0
+    ],
+    "thicknesses_m": [
+      5.0,
+      20.0
+    ],
+    "spacing_min_m": 1.0,
+    "spacing_max_m": 200.0,
+    "spacing_count": 40,
+    "sigma_log": 0.03,
+    "seed": 42
+  },
+  "versions": {
+    "geoscope-resistivity": "0.2.0",
+    "simpeg": "0.25.0",
+    "numpy": "2.5.4",
+    "matplotlib": "3.11.2"
+  }
+}

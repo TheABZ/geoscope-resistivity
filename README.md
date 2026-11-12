@@ -6,10 +6,65 @@ GeoScope is a Python project exploring layered-earth electrical resistivity,
 inverse problems, and eventually uncertainty. It builds on Gabriel Chiazor
 Unomah's physics and groundwater geophysics background at the University of Lagos.
 
-**Current milestone: v0.1 — forward modelling.** Generate a three-layer synthetic
-Earth, simulate a Wenner-alpha sounding with SimPEG, add reproducible measurement
-noise, and export a figure and dataset. Inversion, Bayesian sampling, and the
-interactive dashboard are planned; they are not implemented in this version.
+**Current version: v0.2 — complete synthetic workflow.** Simulate a layered Earth,
+recover layer properties from multiple starting models, sample the posterior
+with four independent chains, compare noise and survey extent, and explore an
+interactive Streamlit dashboard. The software is a research demonstration;
+field-data validation and a peer-reviewed study remain separate tasks.
+
+![Inversion and conditional uncertainty](results/analysis/inversion_uncertainty.svg)
+
+## Start here
+
+If you already installed the first version, open Command Prompt in the project
+folder and run:
+
+```bat
+git pull
+.venv\Scripts\python -m pip install -e ".[dev,dashboard]"
+.venv\Scripts\python -m streamlit run streamlit_app.py
+```
+
+The dashboard opens in your browser, normally at `http://localhost:8501`.
+Change layer properties or upload a Wenner-alpha CSV, compare recovered values,
+then click **Run uncertainty analysis**. Downloads include data, diagnostics,
+and unthinned samples. Results clear when inputs change. This dashboard runs on
+your own computer; the GitHub repository is not a hosted web app.
+
+For a fresh Windows installation, follow the steps below. You can also
+double-click `launch_dashboard.bat` after installing Python and downloading or
+cloning the repository; it creates the environment and installs dependencies.
+
+## Run the complete analysis
+
+After installation:
+
+```bat
+.venv\Scripts\python -m geoscope.analysis --sensitivity
+.venv\Scripts\python -m pytest -q
+```
+
+Linux/macOS: replace `.venv\Scripts\python` with `.venv/bin/python`.
+
+The analysis writes `results/analysis/analysis.json`, a parameter summary,
+multiple-start comparison, response intervals, posterior traces, and six
+sensitivity experiments. Full samples are saved as `posterior_samples.npz`
+locally and excluded from version control. Reproduce every output with the
+command above. The defaults use 4 chains, 2,000 warmup iterations, and 4,000
+retained draws per chain. Increase `--draws` and `--warmup` for difficult cases;
+diagnostic failure is reported as `inconclusive_sampling`, not success.
+
+Analyze your own **Wenner-alpha** CSV:
+
+```bat
+.venv\Scripts\python -m geoscope.analysis --data my_sounding.csv --layers 3 --output results/my_analysis
+```
+
+Required columns are `a_m`, `rhoa_observed_ohm_m`, and `sigma_log`, all positive
+and finite. The last is the standard deviation of log-resistivity errors, not
+an uncertainty in Ω m. Arrays must have equal lengths. Do not use Schlumberger
+or dipole–dipole data with this Wenner operator. Uploads are not automatically
+classified or verified as field data.
 
 ![Synthetic layered Earth and Wenner sounding](results/first_sounding.svg)
 
@@ -22,7 +77,7 @@ line in order:
 git clone https://github.com/TheABZ/geoscope-resistivity.git
 cd geoscope-resistivity
 py -3.11 -m venv .venv
-.venv\Scripts\python -m pip install -e ".[dev]"
+.venv\Scripts\python -m pip install -e ".[dev,dashboard]"
 .venv\Scripts\python -m geoscope.demo --config examples/three_layer.json --output results
 ```
 
@@ -52,7 +107,7 @@ The generated files are:
 git clone https://github.com/TheABZ/geoscope-resistivity.git
 cd geoscope-resistivity
 python3 -m venv .venv
-.venv/bin/python -m pip install -e '.[dev]'
+.venv/bin/python -m pip install -e '.[dev,dashboard]'
 .venv/bin/python -m geoscope.demo --config examples/three_layer.json --output results
 .venv/bin/python -m pytest -q
 ```
@@ -99,20 +154,49 @@ with `--output results/my_experiment` to preserve the original example.
 - Tests compare the numerical forward solver against a homogeneous half-space
   and an independent analytical two-layer image series, then check invisible
   interfaces, resistivity scaling, noise reproducibility, invalid inputs, and
-  the complete export workflow.
+  the complete export workflow. Additional tests recover a known three-layer
+  model, compare the sampler with an analytic one-layer posterior, detect
+  deliberately unmixed chains, and exercise dashboard inputs, sampling, and
+  clearing stale results.
+
+## Inference assumptions
+
+SciPy least squares minimizes log-space residuals divided by their known
+standard deviations. The assumed number of layers stays fixed. Independent
+priors are uniform in log resistivity over 10–3000 Ω m and log thickness over
+0.5–100 m. This is not a uniform prior in physical units. No smoothing or
+extra regularisation is used beyond these bounds.
+
+Four independent random-walk Metropolis chains start dispersed near the best
+fit. Covariance adaptation occurs during warmup only. ArviZ checks rank-normalized
+split R-hat ≤1.01 and bulk/tail ESS ≥400 for **every** parameter. Passing these
+checks does not guarantee exploration of other posterior modes. Intervals remain
+conditional on priors, layer count, known noise, and a 1D Earth. They exclude
+uncertainty in geology, array geometry, and model class.
+
+The example has weighted residual RMS ≈0.790. Its 30 m survey-extent experiments
+hit the deep-resistivity upper bound, while the 200 m experiments constrain it
+better in this one synthetic case. A good residual alone does not establish a
+reliable layer estimate. See [the example results](docs/results.md).
 
 Windows test command: `.venv\Scripts\python -m pytest -q`.
+
+Validation for this update: **30 tests passed on Python 3.12/Linux**, including
+Streamlit AppTest interactions. The Windows launcher is provided but has not
+been executed on Windows. A separate Chromium screenshot check was blocked by
+this execution environment's process/socket restrictions.
 
 ## Development path
 
 - [x] Forward model, synthetic noise, exports, physics benchmarks
-- [ ] Bounded inversion of resistivity and thickness in log coordinates
-- [ ] Multiple starting models and survey/noise sensitivity experiments
-- [ ] Bayesian sampling with explicit priors and convergence diagnostics
-- [ ] Interactive dashboard
+- [x] Bounded inversion of resistivity and thickness in log coordinates
+- [x] Multiple starting models and survey/noise sensitivity experiments
+- [x] Bayesian sampling with explicit priors and convergence diagnostics
+- [x] Interactive dashboard with CSV input and downloads
 - [ ] Field-data case study after data and metadata review
 
 Read [Lesson 1](docs/lesson_01.md) for an introduction and a small experiment.
+Continue with [Lesson 2](docs/lesson_02.md) for inversion and uncertainty.
 Read [the methods](docs/methods.md) for numerical assumptions and references.
 
 ## Attribution and licence

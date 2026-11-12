@@ -1,0 +1,82 @@
+{
+  "status": "diagnostics_passed",
+  "criteria": "All parameters: rank R-hat <=1.01; bulk and tail ESS >=400",
+  "parameters": [
+    {
+      "parameter": "rho_1",
+      "q025": 97.31355153561063,
+      "median": 99.2029492889181,
+      "q975": 101.19184932886823,
+      "rhat": 1.003650261676892,
+      "ess_bulk": 762.6222129034655,
+      "ess_tail": 1273.4037212974486
+    },
+    {
+      "parameter": "rho_2",
+      "q025": 18.308994948174128,
+      "median": 23.002612240652123,
+      "q975": 26.42748947571807,
+      "rhat": 1.0055082371460498,
+      "ess_bulk": 635.4198322174058,
+      "ess_tail": 417.4851034621603
+    },
+    {
+      "parameter": "rho_3",
+      "q025": 607.5806131278927,
+      "median": 725.4049050226831,
+      "q975": 915.5587048660212,
+      "rhat": 1.0034919188564884,
+      "ess_bulk": 994.1920707635535,
+      "ess_tail": 1241.6178459963999
+    },
+    {
+      "parameter": "h_1",
+      "q025": 4.843465248796703,
+      "median": 5.229182660328395,
+      "q975": 5.673958805116384,
+      "rhat": 1.0054465964123804,
+      "ess_bulk": 623.8031765009554,
+      "ess_tail": 455.43632591532315
+    },
+    {
+      "parameter": "h_2",
+      "q025": 13.763370411600446,
+      "median": 17.860878680590993,
+      "q975": 21.18663235817605,
+      "rhat": 1.005588202123281,
+      "ess_bulk": 672.895252789657,
+      "ess_tail": 432.8131035340154
+    }
+  ],
+  "limitation": "Passing diagnostics does not prove all posterior modes were explored.",
+  "acceptance_rates": [
+    0.2555,
+    0.2665,
+    0.2855,
+    0.2525
+  ],
+  "seed": 43,
+  "warmup": 2000,
+  "draws_per_chain": 4000,
+  "chains": 4,
+  "initialization": "Dispersed near best multistart fit using local covariance",
+  "data_origin": "synthetic",
+  "model_layers": 3,
+  "prior": "Independent uniform log(rho) in log([10,3000] \u03a9 m); log(h) in log([0.5,100] m)",
+  "likelihood": "Independent Gaussian log-residuals with known sigma_log",
+  "best_fit": {
+    "rho_1": 99.25906246039513,
+    "rho_2": 23.404168216365882,
+    "rho_3": 733.3481996034269,
+    "h_1": 5.185892546686297,
+    "h_2": 18.244356309807948
+  },
+  "weighted_rms": 0.7904932331686509,
+  "versions": {
+    "geoscope-resistivity": "0.2.0",
+    "simpeg": "0.25.0",
+    "numpy": "2.5.4",
+    "scipy": "1.18.1",
+    "arviz": "0.23.4"
+  }
+}
