@@ -1,0 +1,9 @@
+{
+  "resistivities_ohm_m": [100.0, 25.0, 800.0],
+  "thicknesses_m": [5.0, 20.0],
+  "spacing_min_m": 1.0,
+  "spacing_max_m": 200.0,
+  "spacing_count": 40,
+  "sigma_log": 0.03,
+  "seed": 42
+}
