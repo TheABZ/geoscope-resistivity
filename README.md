@@ -6,7 +6,7 @@ GeoScope is a Python project exploring layered-earth electrical resistivity,
 inverse problems, and eventually uncertainty. It builds on Gabriel Chiazor
 Unomah's physics and groundwater geophysics background at the University of Lagos.
 
-**Current version: v0.2 — complete synthetic workflow.** Simulate a layered Earth,
+**Current version: v0.2.1 — diagnostic reporting update.** Simulate a layered Earth,
 recover layer properties from multiple starting models, sample the posterior
 with four independent chains, compare noise and survey extent, and explore an
 interactive Streamlit dashboard. The software is a research demonstration;
@@ -174,6 +174,26 @@ checks does not guarantee exploration of other posterior modes. Intervals remain
 conditional on priors, layer count, known noise, and a 1D Earth. They exclude
 uncertainty in geology, array geometry, and model class.
 
+### When sampling does not converge
+
+The default 30 m synthetic example is a known difficult case for this sampler.
+Runs with 4000 and 8000 retained draws have failed diagnostics. This is not a
+software crash and must not be reported as a validated posterior result.
+Increasing the draw count alone is not an established fix. The 200 m baseline
+passes, but that does not validate every shorter survey or model configuration.
+
+Version 0.2.1 withholds parameter medians and intervals from the main results
+table when diagnostics fail. It displays R-hat and ESS instead; an explicitly
+labelled debugging checkbox can reveal unvalidated sample quantiles. Raw
+downloads preserve the failure status. New diagnostics exports also record
+array geometry, electrode spacings, observations, errors, and software version.
+Sampling progress is shown after each independent chain. The scientific
+sampler, priors, and convergence thresholds are unchanged from v0.2.0.
+
+Keep the failed run as a diagnostic case and compare with a validated baseline.
+A sampling failure alone does not establish weak subsurface identifiability;
+inference geometry and algorithm performance must be examined separately.
+
 The example has weighted residual RMS ≈0.790. Its 30 m survey-extent experiments
 hit the deep-resistivity upper bound, while the 200 m experiments constrain it
 better in this one synthetic case. A good residual alone does not establish a
@@ -181,7 +201,7 @@ reliable layer estimate. See [the example results](docs/results.md).
 
 Windows test command: `.venv\Scripts\python -m pytest -q`.
 
-Validation for this update: **30 tests passed on Python 3.12/Linux**, including
+Validation for this update: **31 tests passed on Python 3.12/Linux**, including
 Streamlit AppTest interactions. The Windows launcher is provided but has not
 been executed on Windows. A separate Chromium screenshot check was blocked by
 this execution environment's process/socket restrictions.

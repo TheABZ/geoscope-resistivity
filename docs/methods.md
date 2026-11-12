@@ -71,6 +71,13 @@ sampling diagnostics passed. Nonconvergence is retained as an explicit result.
 Other posterior modes, incorrect layer count, uncertain noise, and violations
 of 1D geometry can invalidate an interpretation even when diagnostics pass.
 
+Version 0.2.1 changes failure presentation and export metadata only; its sampler
+and diagnostic thresholds are the same as v0.2.0. When any diagnostic fails,
+the dashboard withholds parameter medians and intervals by default and retains
+R-hat/ESS and failure status. Quantiles of unvalidated samples remain available
+under an explicit debugging control and in raw diagnostics downloads. They
+must not be interpreted as validated credible intervals.
+
 Response intervals use up to 1000 randomly selected draws. Noise-free curves
 give pointwise latent-response intervals; an additional draw from the assumed
 noise model gives pointwise future-observation intervals. The latter include

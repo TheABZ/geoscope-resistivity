@@ -28,7 +28,7 @@ def diagnostics(log_samples, names):
             "limitation": "Passing diagnostics does not prove all posterior modes were explored."}
 
 
-def sample_posterior(problem, fit, draws=4000, warmup=2000, chains=4, seed=43):
+def sample_posterior(problem, fit, draws=4000, warmup=2000, chains=4, seed=43, progress=None):
     for value, minimum, label in ((draws, 20, "draws"), (warmup, 50, "warmup"), (chains, 2, "chains")):
         if isinstance(value, bool) or not isinstance(value, int) or value < minimum:
             raise ValueError(f"{label} must be an integer >= {minimum}")
@@ -67,8 +67,11 @@ def sample_posterior(problem, fit, draws=4000, warmup=2000, chains=4, seed=43):
             else:
                 samples[chain, step - warmup] = current
         acceptance.append(accepted / draws)
+        if progress:
+            progress(chain+1, chains)
     report = diagnostics(samples, problem.names)
-    report.update({"acceptance_rates": acceptance, "seed": seed, "warmup": warmup,
+    report.update({"sampler": "Independent adaptive-warmup random-walk Metropolis; adaptation stops before retained draws",
+                   "acceptance_rates": acceptance, "seed": seed, "warmup": warmup,
                    "draws_per_chain": draws, "chains": chains,
                    "initialization": "Dispersed near best multistart fit using local covariance"})
     return samples, report

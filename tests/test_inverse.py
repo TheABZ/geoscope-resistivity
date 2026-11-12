@@ -68,3 +68,4 @@ def test_sampler_repeatability():
     first, _ = sample_posterior(problem, fit, draws=30, warmup=50, seed=5)
     second, _ = sample_posterior(problem, fit, draws=30, warmup=50, seed=5)
     np.testing.assert_array_equal(first, second)
+

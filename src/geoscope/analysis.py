@@ -78,7 +78,7 @@ def make_figures(problem, fit, samples, report, output):
             axis.set_ylabel(name)
         axes[0, 0].legend(ncol=4, fontsize=8)
         axes[-1, 0].set_xlabel("Retained iteration (warmup removed; display thinned only)")
-        fig.suptitle("Independent Metropolis chains | rho in Ω m; h in m")
+        fig.suptitle("Independent posterior chains | rho in Ω m; h in m")
         fig.savefig(output / "posterior_traces.svg", metadata={"Date": None})
         plt.close(fig)
     return [{"a_m": float(a[i]), "latent_q025": float(response[0, i]),

@@ -57,8 +57,13 @@ Neither is a direct underground depth interval. Curve bands are pointwise
 
 Start the dashboard using the README command. Change one parameter at a time,
 then compare truth and recovered values. Reduce maximum spacing to 30 m.
-Run uncertainty analysis and inspect the trace for rho_3. Any intervals from
-failed diagnostics are provisional. Changed inputs clear the previous samples.
+Run uncertainty analysis and inspect the trace for rho_3. This 30 m example is
+a known difficult case for the current sampler. If diagnostics fail, retain the
+outputs as a failed sampling case; do not interpret the parameter intervals or
+keep extending runs without a validated sampling strategy. Sampling failure
+alone does not prove weak geological identifiability. Changed inputs clear
+the previous samples. In v0.2.1, failed runs show diagnostic metrics and withhold
+the estimated parameters unless a debugging checkbox is explicitly selected.
 
 Try explaining why deeper-layer uncertainty can increase without a dramatic
 change in the fitted sounding curve.

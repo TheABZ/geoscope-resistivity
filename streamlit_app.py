@@ -11,11 +11,12 @@ import streamlit as st
 from geoscope.forward import LayeredEarth, simulate_wenner, synthetic_observations
 from geoscope.inverse import Sounding, InverseProblem
 from geoscope.posterior import sample_posterior
+from geoscope import __version__
 
 st.set_page_config(page_title="GeoScope | Resistivity", page_icon="🌍", layout="wide")
 st.title("GeoScope")
 st.subheader("Explore what electrical soundings reveal beneath the surface")
-st.caption("Synthetic experiments and Wenner-alpha CSV analysis • Gabriel Chiazor Unomah")
+st.caption(f"GeoScope v{__version__} • Synthetic experiments and Wenner-alpha CSV analysis • Gabriel Chiazor Unomah")
 
 with st.sidebar:
     st.header("Experiment")
@@ -100,13 +101,24 @@ with st.expander("Compare starting models"):
 st.header("How uncertain are the recovered properties?")
 st.write("Sample four independent chains under explicit log-uniform priors: resistivity 10–3000 Ω m and thickness 0.5–100 m. Noise estimates and layer count are held fixed.")
 draws = st.selectbox("Retained draws per chain", [2000, 4000, 8000], index=1)
+warmup = st.selectbox("Warmup iterations per chain", [1000, 2000, 4000], index=1)
+if np.linalg.cond(fit.jac) > 1000:
+    st.info("This fit is poorly conditioned. Sampling may not converge with the current sampler. Increasing draws alone is not a validated remedy; preserve inconclusive results for diagnosis.")
 # Results are tied to exact input bytes, layer count, seed, and sampling settings.
-fingerprint = (csv_data, layers, seed, draws)
+fingerprint = (csv_data, layers, seed, draws, warmup, __version__)
 if st.session_state.get("posterior_input") != fingerprint:
     st.session_state.pop("posterior_result", None)
 if st.button("Run uncertainty analysis", type="primary"):
+    progress = st.progress(0, text="Sampling independent chain 1 of 4…")
     with st.spinner("Sampling four chains and checking convergence…"):
-        samples, report = sample_posterior(problem, fit, draws=draws, warmup=2000, seed=seed+1)
+        samples, report = sample_posterior(problem, fit, draws=draws, warmup=warmup, seed=seed+1,
+                    progress=lambda done, total: progress.progress(done/total, text=f"Completed chain {done} of {total}"))
+    progress.empty()
+    report["geoscope_version"] = __version__
+    report["experiment"] = {"origin": "synthetic" if clean is not None else "user_supplied_unverified",
+        "array": "Wenner-alpha", "spacings_m": a.tolist(), "observed_ohm_m": observed.tolist(),
+        "sigma_log": sigma.tolist(), "layers": layers, "data_seed": seed,
+        "prior": "Independent log-uniform: rho 10–3000 Ω m, h 0.5–100 m"}
     st.session_state.posterior_result = (samples, report)
     st.session_state.posterior_input = fingerprint
 if "posterior_result" in st.session_state:
@@ -114,9 +126,16 @@ if "posterior_result" in st.session_state:
     if report["status"] == "diagnostics_passed":
         st.success("Sampling diagnostics passed. Interpretation remains conditional on the chosen model and priors.")
     else:
-        st.warning("Sampling is inconclusive. Treat intervals as provisional; increase draws and inspect chain mixing.")
-    st.dataframe(pd.DataFrame(report["parameters"]), hide_index=True)
-    st.caption("q025–q975 are 95% marginal credible intervals. R-hat ≤1.01 and bulk/tail ESS ≥400 are required for every parameter.")
+        st.warning("Sampling is inconclusive. Do not interpret these intervals yet. Inspect traces and initialization; more draws alone may not resolve poor mixing.")
+    summary = pd.DataFrame(report["parameters"])
+    if report["status"] == "diagnostics_passed":
+        st.dataframe(summary, hide_index=True)
+        st.caption("q025–q975 are 95% marginal credible intervals. R-hat ≤1.01 and bulk/tail ESS ≥400 are required for every parameter.")
+    else:
+        st.dataframe(summary[["parameter", "rhat", "ess_bulk", "ess_tail"]], hide_index=True)
+        st.caption("Parameter estimates and intervals are withheld until sampling diagnostics pass. A failed sampler does not establish the Earth's true properties.")
+        if st.checkbox("Show unvalidated sample quantiles for debugging"):
+            st.dataframe(summary, hide_index=True)
     param = st.selectbox("Inspect parameter traces", problem.names)
     i = problem.names.index(param)
     traces = pd.DataFrame(np.exp(samples[:, :, i]).T, columns=[f"Chain {j+1}" for j in range(4)])
