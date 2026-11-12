@@ -208,6 +208,14 @@ this execution environment's process/socket restrictions.
 
 ## Development path
 
+The [verified results page](docs/results.md) compares the supplied 200 m baseline
+with the 30 m run and its extension. Downloadable PNG figures, diagnostic JSON,
+CSV summaries, and a source-hash manifest are in `results/verified_runs/`.
+The two 30 m exports share an exact sample prefix and are not independent
+replications. The packaging script reproduces figures from the original
+exports without running new simulations. A [LinkedIn draft](docs/linkedin_post.md)
+is ready for review.
+
 - [x] Forward model, synthetic noise, exports, physics benchmarks
 - [x] Bounded inversion of resistivity and thickness in log coordinates
 - [x] Multiple starting models and survey/noise sensitivity experiments

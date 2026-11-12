@@ -1,0 +1,37 @@
+{
+  "label_origin": "Survey extents supplied by user and screenshots; not encoded in legacy exports",
+  "thirty_metre_4000_is_exact_prefix_of_8000": true,
+  "comparison_design": "One baseline and one short-survey trajectory extended from 4000 to 8000 draws; not independent replications",
+  "files": [
+    {
+      "case": "200m_4000",
+      "file_name": "diagnostics.json",
+      "sha256": "9f26cdd366e6741c5a3691c6b38874ed61cc0513edfeec85e333e42cc6971bb0"
+    },
+    {
+      "case": "200m_4000",
+      "file_name": "posterior_samples.npz",
+      "sha256": "d1bd835b2a4eaa2a88c5dd77363a7f9f035f8bfc4db18c39ce332a4f8e60467f"
+    },
+    {
+      "case": "30m_4000",
+      "file_name": "diagnostics (1).json",
+      "sha256": "4eff762f4f14d86b7a1ce5f7f5eef5bfb2bdad1aa3d29a7f04131bca73811c76"
+    },
+    {
+      "case": "30m_4000",
+      "file_name": "posterior_samples (1).npz",
+      "sha256": "5667595d2021da613569a7a640ee759d95a385be64ac964dcd826902536c9913"
+    },
+    {
+      "case": "30m_8000",
+      "file_name": "diagnostics (2).json",
+      "sha256": "40edf8c41be3cd21033b58bcebf8378aaadc2f59e7934233930a882e9676583e"
+    },
+    {
+      "case": "30m_8000",
+      "file_name": "posterior_samples (2).npz",
+      "sha256": "7fb79851ab0079bde36ecf9d007dc7d89eb291087d7d0920af0590314c961819"
+    }
+  ]
+}

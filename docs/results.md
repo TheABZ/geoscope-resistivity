@@ -1,4 +1,46 @@
-# Reproducible synthetic demonstration
+# Verified synthetic results
+
+Three supplied dashboard exports were checked against their raw posterior
+samples. The 200 m baseline passed the declared convergence checks; both
+30 m exports failed. Survey labels come from the user and screenshots; the
+legacy files do not independently encode electrode spacings.
+
+| Survey / retained draws per chain | Maximum R-hat | Minimum bulk ESS | Minimum tail ESS | Decision |
+| --- | ---: | ---: | ---: | --- |
+| 200 m / 4,000 | 1.0056 | 623.8 | 417.5 | Passed |
+| 30 m / 4,000 | 1.9091 | 5.6 | 27.2 | Inconclusive |
+| 30 m / 8,000 | 1.6418 | 6.6 | 12.2 | Inconclusive |
+
+Every parameter must have rank-normalized split R-hat ≤1.01 and bulk/tail ESS
+≥400. All runs have four chains, seed 43, and 2,000 warmup steps.
+
+![Convergence comparison](../results/verified_runs/convergence_comparison.png)
+
+The 30 m array with 4,000 draws is an **exact prefix** of the 8,000-draw array
+for every chain and parameter. The extension is not an independent replication.
+Do not interpret either failed run's quantiles as validated credible intervals.
+Sampling failure alone does not establish geological non-identifiability.
+
+![Deep-layer traces](../results/verified_runs/deep_layer_traces.png)
+
+## Audit trail and reproduction
+
+`results/verified_runs/` contains diagnostic JSON files and CSV summaries.
+`source_manifest.json` records SHA-256 hashes of all six original exports.
+Raw NPZ files are not copied into the repository. Retain the original exports
+with the filenames listed in the manifest.
+
+```sh
+python scripts/package_verified_runs.py --inputs /path/to/exports --output results/verified_runs
+```
+
+For the optional three-page PDF, install `reportlab` and add
+`--pdf GeoScope_Verified_Project_Report.pdf`. The script checks array shapes,
+finite values, reported quantiles within floating-point tolerance, diagnostic
+status thresholds, and the sample-prefix relationship. It uses existing samples
+and does not run another simulation.
+
+## Original computational reference experiment
 
 Command: `python -m geoscope.analysis --sensitivity` with the project's installed
 virtual environment. Numerical versions are recorded in `analysis.json`.
@@ -13,7 +55,7 @@ All measurements in this demonstration are simulated.
 | --- | ---: | ---: | --- | --- |
 | rho_1 | 100 | 99.20 | 97.31–101.19 | Ω m |
 | rho_2 | 25 | 23.00 | 18.31–26.43 | Ω m |
-| rho_3 | 800 | 725.40 | 607.58–915.56 | Ω m |
+| rho_3 | 800 | 725.41 | 607.58–915.56 | Ω m |
 | h_1 | 5 | 5.23 | 4.84–5.67 | m |
 | h_2 | 20 | 17.86 | 13.76–21.19 | m |
 

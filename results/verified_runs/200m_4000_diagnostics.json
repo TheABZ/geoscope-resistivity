@@ -1,0 +1,63 @@
+{
+  "status": "diagnostics_passed",
+  "criteria": "All parameters: rank R-hat <=1.01; bulk and tail ESS >=400",
+  "parameters": [
+    {
+      "parameter": "rho_1",
+      "q025": 97.31354861133931,
+      "median": 99.20294375151377,
+      "q975": 101.19184705917057,
+      "rhat": 1.0036503121795295,
+      "ess_bulk": 762.6201763237651,
+      "ess_tail": 1273.4037212974488
+    },
+    {
+      "parameter": "rho_2",
+      "q025": 18.308957416822807,
+      "median": 23.00257937907688,
+      "q975": 26.427535926330165,
+      "rhat": 1.0055084414560553,
+      "ess_bulk": 635.4178668743624,
+      "ess_tail": 417.48510346216034
+    },
+    {
+      "parameter": "rho_3",
+      "q025": 607.5811931280759,
+      "median": 725.4052483709419,
+      "q975": 915.5589344712147,
+      "rhat": 1.003491895160906,
+      "ess_bulk": 994.1891542836504,
+      "ess_tail": 1241.6178459963999
+    },
+    {
+      "parameter": "h_1",
+      "q025": 4.8434655194013345,
+      "median": 5.22918583066005,
+      "q975": 5.673961040577984,
+      "rhat": 1.0054466792038732,
+      "ess_bulk": 623.799564092746,
+      "ess_tail": 455.43632591532315
+    },
+    {
+      "parameter": "h_2",
+      "q025": 13.763334472831657,
+      "median": 17.86087502343153,
+      "q975": 21.18665890243107,
+      "rhat": 1.0055891667386363,
+      "ess_bulk": 672.9374494755964,
+      "ess_tail": 432.8131035340154
+    }
+  ],
+  "limitation": "Passing diagnostics does not prove all posterior modes were explored.",
+  "acceptance_rates": [
+    0.2555,
+    0.2665,
+    0.2855,
+    0.2525
+  ],
+  "seed": 43,
+  "warmup": 2000,
+  "draws_per_chain": 4000,
+  "chains": 4,
+  "initialization": "Dispersed near best multistart fit using local covariance"
+}
